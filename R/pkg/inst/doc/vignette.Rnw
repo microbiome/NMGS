@@ -1,0 +1,42 @@
+%\VignetteIndexEntry{netresponse}
+%The above line is needed to remove a warning in R CMD check
+\documentclass[a4paper]{article}
+
+\title{NMGS}
+\author{TBA$^{1,2}$\footnote{TBA@iki.fi}}
+
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage[authoryear,round]{natbib}
+\usepackage[numbers]{natbib}
+
+\usepackage{hyperref}
+\usepackage{Sweave}
+\usepackage{float}
+
+%\textwidth=6.2in
+%\textheight=8.5in
+%\oddsidemargin=.1in
+%\evensidemargin=.1in
+%\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+
+\section{Version information}
+
+This document was written using:
+
+<<details>>=
+sessionInfo()
+@
+
+
+\end{document}

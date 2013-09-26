@@ -1,0 +1,20 @@
+citHeader("To cite NMGS (algorithm and package) in publications use:")
+
+citEntry(entry="article",
+         title = "NMGS",
+         author = personList(
+	 	person(given ="First", family="Last", email = "first.last@iki.fi")
+	 	  ),
+	 journal = "TBA",
+	 year = "TBA",
+         volume = "xxx", 
+	 issue = "yyy", 
+	 pages = "zzz", 
+         textVersion =
+         paste("N.N et al.",
+               "Title",
+               "Journal xx(yy):zzz, aaaa.",
+               sep=" ")
+         )
+
+

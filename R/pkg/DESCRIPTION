@@ -1,0 +1,16 @@
+Package: NMGS
+Type: Package
+Title: NMGS
+Version: 0.0.02
+Date: 2013-08-26
+Author: Leo Lahti, Christopher Quince, Keith Harris et al.
+Maintainer: Leo Lahti <leo.lahti@iki.fi>
+Description: Neutral model with Dirichlet processes.
+License: GPL (>=2)
+Depends:
+    R (>= 2.15.1),
+    methods
+URL: TBA
+LazyLoad: yes
+Collate:
+    'internals.R'
