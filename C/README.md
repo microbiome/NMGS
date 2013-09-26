@@ -71,7 +71,7 @@ where med1 is the median for the first value, med2 second, n1 is the number of s
 
 Finally to average over the metapopulations we use AverageM.pl:
 
-# ./Scripts/AverageM.pl < Simulation_out_m.csv
+./Scripts/AverageM.pl < Simulation_out_m.csv
 
 
 
