@@ -1,0 +1,2 @@
+useDynLib(NMGS)
+exportPattern("^[[:alpha:]]+")
