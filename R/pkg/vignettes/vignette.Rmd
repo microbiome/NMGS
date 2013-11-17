@@ -11,14 +11,16 @@ NMGS - Neutral models for community assembly
 ```{r install2, eval=FALSE}
 install.packages("devtools")
 library(devtools)
-install_github("microbiome", "NMGS")
+install_github("NMGS", "microbiome", subdir = "R/pkg/")
 library(NMGS)
 ```
 
 ### Learning the NMGS model
 
 Carry out the NMGS simulations with the [C
-scripts](https://github.com/microbiome/NMGS/tree/master/C).
+scripts](https://github.com/microbiome/NMGS/tree/master/C). These will
+produce the NMGS [output
+files](https://github.com/microbiome/NMGS/tree/master/C/output).
 
 
 ### Reading the NMGS outputs
