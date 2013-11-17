@@ -22,13 +22,12 @@
 #' @examples #  TBA
 #' @keywords utilities
 
-
-testf <- function( a, b ){
-
-  qOFz <- .Call("compare_doubles", a, b, PACKAGE = "NMGS")
-
-  qOFz
-  
-}
+#testf <- function( a, b ){
+#
+#  qOFz <- .Call("compare_doubles", a, b, PACKAGE = "NMGS")
+#
+#  qOFz
+# 
+#}
 
 

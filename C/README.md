@@ -73,9 +73,3 @@ Finally to average over the metapopulations we use AverageM.pl:
 
 ./Scripts/AverageM.pl < Simulation_out_m.csv
 
-
-
-
-
-
-
