@@ -1,1 +1,6 @@
-export(testf)
+export(nmgs_median)
+export(nmgs_metapopulation_average)
+export(nmgs_neutrality)
+export(read_nmgs)
+export(read_nmgs_metacommunity)
+export(read_nmgs_stats)

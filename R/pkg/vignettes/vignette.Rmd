@@ -15,26 +15,46 @@ install_github("microbiome", "NMGS")
 library(NMGS)
 ```
 
-### Examples
+### Learning the NMGS model
 
-We assume that the user has already carried out the NMGS modeling phase using the [C scripts](https://github.com/microbiome/NMGS/tree/master/C). Read the MCMC samples in R for further analysis:
+Carry out the NMGS simulations with the [C
+scripts](https://github.com/microbiome/NMGS/tree/master/C).
+
+
+### Reading the NMGS outputs
+
+Read the output files in R for further analysis. We assume you have
+the C output files in the working directory.
 
 ```{r io, message=FALSE, warning=FALSE}
-samples <- read_nmgs("~/Rpackages/NMGS/C/Simulation_out.csv")
-metacommunity <- read_nmgs_metacommunity("~/Rpackages/NMGS/C/Simulation_out_m.csv")
-stats <- read_nmgs_stats("~/Rpackages/NMGS/C/Simulation_out_s.csv")
+samples <- read_nmgs("Simulation_out.csv")
+metacommunity <- read_nmgs_metacommunity("Simulation_out_m.csv")
+stats <- read_nmgs_stats("Simulation_out_s.csv")
+```
 
-# Calculate medians for all samples
+### Analyze the NMGS outputs
+
+Calculate medians for all samples:
+
+```{r medians, message=FALSE, warning=FALSE}
 medians <- nmgs_median(samples, burnin = 25000)
 print(medians)
+```
 
-# Test neutrality
-#' Compare the log-likelihood under the full neutral model with the observed data.
+Test neutrality:
+
+```{r neutrality, message=FALSE, warning=FALSE}
+# Compare the log-likelihood under the full neutral 
+# model with the observed data.
 print(nmgs_neutrality(stats, "LN", "LO"))
-#' the same but for local community assembly. 
-print(nmgs_neutrality(stats, "LL", "LO"))
 
-# Calculate metapopulation average (currently only for the local communities)
+# The same but for local community assembly. 
+print(nmgs_neutrality(stats, "LL", "LO"))
+```
+
+Calculate metapopulation average (currently only for the local communities):
+
+```{r metapop, message=FALSE, warning=FALSE}
 print(nmgs_metapopulation_average(metacommunity)$local)
 ```
 
