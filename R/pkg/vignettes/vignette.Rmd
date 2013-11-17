@@ -1,0 +1,40 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{An R Markdown Vignette made with knitr}
+-->
+
+NMGS - Neutral models for community assembly
+===========
+
+### Installing and loading the development version
+
+```{r install2, eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("microbiome", "NMGS")
+library(NMGS)
+```
+
+### Examples
+
+
+
+### Licensing and Citations
+
+This work can be freely used, modified and distributed under the 
+[GNU General Public GPL>=2 license](https://en.wikipedia.org/wiki/GNU_General_Public_License).
+
+Kindly cite the work, if appropriate, as 'Leo Lahti, Christoper Quince et al. (2013). NMGS R package. URL: https://github.com/microbiome/NMGS)'. 
+
+
+### Session info
+
+This vignette was created with
+
+```{r sessioninfo, message=FALSE, warning=FALSE}
+sessionInfo()
+```
+
+
+
+
