@@ -3,15 +3,13 @@
 \title{Determine if community appears neutral. Calculate the
 proportion of sample A that exceeds the median of sample B.}
 \usage{
-  nmgs_neutrality(stats, i, j)
+  nmgs_neutrality(stats, model)
 }
 \arguments{
   \item{stats}{Statistics of the samples communities as in
   the read_nmgs_s output.}
 
-  \item{i}{index of sample A}
-
-  \item{j}{index of sample B
+  \item{model}{Model to test: "local" or "full"
 
   Returns:}
 }
