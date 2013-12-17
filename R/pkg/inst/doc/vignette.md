@@ -32,11 +32,12 @@ the C output files in the working directory.
 
 
 ```r
+library(NMGS)
 samples <- read_nmgs("Simulation_out.csv")
 ```
 
 ```
-## Error: could not find function "read_nmgs"
+## Error: cannot open the connection
 ```
 
 ```r
@@ -44,7 +45,7 @@ metacommunity <- read_nmgs_metacommunity("Simulation_out_m.csv")  # burnin and t
 ```
 
 ```
-## Error: could not find function "read_nmgs_metacommunity"
+## Error: cannot open the connection
 ```
 
 ```r
@@ -52,7 +53,7 @@ stats <- read_nmgs_stats("Simulation_out_s.csv")
 ```
 
 ```
-## Error: could not find function "read_nmgs_stats"
+## Error: cannot open the connection
 ```
 
 
@@ -80,7 +81,6 @@ _metacommunity:_ A list with N, p, q. Gives the generated
  SL); q is the metacommunity distribution under the full neutral model
  (a list with elements with varying length SN, each corresponding to
  one MCMC sample).
-
 
 
 ## Analyzing the NMGS outputs
@@ -202,7 +202,7 @@ print(nmgs_metapopulation_average(metacommunity)$local)
 ```
 
 ```
-## Error: could not find function "nmgs_metapopulation_average"
+## Error: object 'metacommunity' not found
 ```
 
 
@@ -349,6 +349,7 @@ grid.arrange(local, full, nrow = 2)
 ```
 
 
+Add here the similar histogram for the likelihoods
 
 ### Testing neutrality
 
@@ -362,7 +363,7 @@ print(nmgs_neutrality(stats, "full"))
 ```
 
 ```
-## Error: could not find function "nmgs_neutrality"
+## Error: object 'stats' not found
 ```
 
 ```r
@@ -370,7 +371,7 @@ print(nmgs_neutrality(stats, "local"))
 ```
 
 ```
-## Error: could not find function "nmgs_neutrality"
+## Error: object 'stats' not found
 ```
 
 
@@ -396,7 +397,7 @@ sessionInfo()
 ```
 
 ```
-## R version 2.15.2 (2012-10-26)
+## R version 3.0.1 (2013-05-16)
 ## Platform: x86_64-unknown-linux-gnu (64-bit)
 ## 
 ## locale:
@@ -412,15 +413,15 @@ sessionInfo()
 ## [8] base     
 ## 
 ## other attached packages:
-## [1] gridExtra_0.9.1 ggplot2_0.9.3.1 knitr_1.2      
+## [1] gridExtra_0.9.1 ggplot2_0.9.3.1 NMGS_0.1.02     knitr_1.2      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] colorspace_1.2-2   dichromat_2.0-0    digest_0.6.3      
-##  [4] evaluate_0.4.4     formatR_0.9        gtable_0.1.2      
-##  [7] labeling_0.2       MASS_7.3-23        munsell_0.4.2     
+##  [4] evaluate_0.4.3     formatR_0.7        gtable_0.1.2      
+##  [7] labeling_0.1       MASS_7.3-26        munsell_0.4       
 ## [10] plyr_1.8           proto_0.3-10       RColorBrewer_1.0-5
 ## [13] reshape2_1.2.2     scales_0.2.3       stringr_0.6.2     
-## [16] tools_2.15.2
+## [16] tools_3.0.1
 ```
 
 
