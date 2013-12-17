@@ -29,6 +29,7 @@ Read the output files in R for further analysis. We assume you have
 the C output files in the working directory.
 
 ```{r io, message=FALSE, warning=FALSE}
+library(NMGS)
 samples <- read_nmgs("Simulation_out.csv")
 metacommunity <- read_nmgs_metacommunity("Simulation_out_m.csv") # burnin and thinning already included
 stats <- read_nmgs_stats("Simulation_out_s.csv")
@@ -60,7 +61,6 @@ _metacommunity:_ A list with N, p, q. Gives the generated
  one MCMC sample).
 
 
-
 ## Analyzing the NMGS outputs
 
 ### Summarizing posterior samples
@@ -90,7 +90,7 @@ print(p)
 Follow the convergence of a given parameter. The vertical line indicates the burn-in point:
 
 ```{r convergence, message=FALSE, warning=FALSE}
-thinning <- 200       # Take every kth samples
+thinning <- 200 # Take every kth samples
 s <- seq(1, nrow(samples), thinning)
 plot(s, samples[s, param], type = "l", main = paste(param, "convergence"))
 abline(v = burnin)
@@ -154,6 +154,7 @@ local <- local + xlab("Richness")
 grid.arrange(local, full, nrow = 2)
 ```
 
+Add here the similar histogram for the likelihoods
 
 ### Testing neutrality
 
