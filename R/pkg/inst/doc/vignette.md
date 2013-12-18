@@ -34,26 +34,8 @@ the C output files in the working directory.
 ```r
 library(NMGS)
 samples <- read_nmgs("Simulation_out.csv")
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 metacommunity <- read_nmgs_metacommunity("Simulation_out_m.csv")  # burnin and thinning already included
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 stats <- read_nmgs_stats("Simulation_out_s.csv")
-```
-
-```
-## Error: cannot open the connection
 ```
 
 
@@ -156,27 +138,11 @@ Follow the convergence of a given parameter. The vertical line indicates the bur
 ```r
 thinning <- 200  # Take every kth samples
 s <- seq(1, nrow(samples), thinning)
-```
-
-```
-## Error: object 'samples' not found
-```
-
-```r
 plot(s, samples[s, param], type = "l", main = paste(param, "convergence"))
-```
-
-```
-## Error: object 's' not found
-```
-
-```r
 abline(v = burnin)
 ```
 
-```
-## Error: plot.new has not been called yet
-```
+![plot of chunk convergence](figure/convergence.png) 
 
 
 
@@ -189,9 +155,7 @@ Metacommunity distribution with the local assembly model
 boxplot(metacommunity$p, las = 1)
 ```
 
-```
-## Error: object 'metacommunity' not found
-```
+![plot of chunk metalocal](figure/metalocal.png) 
 
 
 Metacommunity averages:
@@ -202,7 +166,25 @@ print(nmgs_metapopulation_average(metacommunity)$local)
 ```
 
 ```
-## Error: object 'metacommunity' not found
+##   [1] 0.0347458 0.0239980 0.0113415 0.0558154 0.0330752 0.0217902 0.0487197
+##   [8] 0.0272092 0.0533554 0.0293637 0.0371854 0.0218708 0.0342013 0.0433238
+##  [15] 0.0421186 0.0272166 0.0441229 0.0415109 0.0259772 0.0414386 0.0520751
+##  [22] 0.0505479 0.0335348 0.0510489 0.0466658 0.0010942 0.0022312 0.0031043
+##  [29] 0.0044216 0.0008509 0.0043333 0.0024925 0.0096614 0.0039874 0.0007124
+##  [36] 0.0004227 0.0010531 0.0008568 0.0011608 0.0005665 0.0002745 0.0010882
+##  [43] 0.0011955 0.0004347 0.0002802 0.0002851 0.0015172 0.0011871 0.0007507
+##  [50] 0.0008831 0.0002929 0.0007395 0.0004119 0.0009948 0.0018817 0.0002762
+##  [57] 0.0007216 0.0008666 0.0005673 0.0001367 0.0010618 0.0002776 0.0002745
+##  [64] 0.0002735 0.0001350 0.0014793 0.0001346 0.0001394 0.0002763 0.0001349
+##  [71] 0.0007240 0.0001352 0.0001378 0.0001405 0.0001378 0.0001371 0.0001355
+##  [78] 0.0001340 0.0001444 0.0001342 0.0002860 0.0001367 0.0001403 0.0002826
+##  [85] 0.0002737 0.0001335 0.0001374 0.0002759 0.0002730 0.0001367 0.0001419
+##  [92] 0.0001334 0.0001330 0.0001414 0.0001292 0.0001386 0.0001384 0.0001342
+##  [99] 0.0001366 0.0001365 0.0001313 0.0001351 0.0001364 0.0001383 0.0001343
+## [106] 0.0001365 0.0001332 0.0001347 0.0001350 0.0001348 0.0001340 0.0001323
+## [113] 0.0001320 0.0001345 0.0001342 0.0001370 0.0001318 0.0001334 0.0001363
+## [120] 0.0001349 0.0001337 0.0001344 0.0001364 0.0001348 0.0001314 0.0001383
+## [127] 0.0029269
 ```
 
 
@@ -224,63 +206,19 @@ theme_set(theme_bw(15))
 
 full <- qplot(stats$HN, binwidth = 0.1, geom = "histogram") + geom_vline(x = unique(stats$HO), 
     linetype = 2)
-```
-
-```
-## Error: object 'stats' not found
-```
-
-```r
 full <- full + ggtitle("Full neutral model; model diversity vs. observed diversity")
-```
-
-```
-## Error: object 'full' not found
-```
-
-```r
 full <- full + xlab("Diversity")
-```
-
-```
-## Error: object 'full' not found
-```
-
-```r
 
 local <- qplot(stats$HL, binwidth = 0.1, geom = "histogram") + geom_vline(x = unique(stats$HO), 
     linetype = 2)
-```
-
-```
-## Error: object 'stats' not found
-```
-
-```r
 local <- local + ggtitle("Local model; model diversity vs. observed diversity")
-```
-
-```
-## Error: non-numeric argument to binary operator
-```
-
-```r
 local <- local + xlab("Diversity")
-```
-
-```
-## Error: non-numeric argument to binary operator
-```
-
-```r
 
 library(gridExtra)
 grid.arrange(local, full, nrow = 2)
 ```
 
-```
-## Error: object 'full' not found
-```
+![plot of chunk diversitycomp](figure/diversitycomp.png) 
 
 
 
@@ -291,62 +229,18 @@ dashed line):
 ```r
 full <- qplot(stats$SN, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$SO), 
     linetype = 2)
-```
-
-```
-## Error: object 'stats' not found
-```
-
-```r
 full <- full + ggtitle("Full neutral model; model richness vs. observed richness")
-```
-
-```
-## Error: object 'full' not found
-```
-
-```r
 full <- full + xlab("Richness")
-```
-
-```
-## Error: object 'full' not found
-```
-
-```r
 
 local <- qplot(stats$SL, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$SO), 
     linetype = 2)
-```
-
-```
-## Error: object 'stats' not found
-```
-
-```r
 local <- local + ggtitle("Local model; model richness vs. observed richness")
-```
-
-```
-## Error: non-numeric argument to binary operator
-```
-
-```r
 local <- local + xlab("Richness")
-```
-
-```
-## Error: non-numeric argument to binary operator
-```
-
-```r
 
 grid.arrange(local, full, nrow = 2)
 ```
 
-```
-## Error: object 'full' not found
-```
+![plot of chunk richcomp](figure/richcomp.png) 
 
 
 Add here the similar histogram for the likelihoods
@@ -363,7 +257,7 @@ print(nmgs_neutrality(stats, "full"))
 ```
 
 ```
-## Error: object 'stats' not found
+## Error: undefined columns selected
 ```
 
 ```r
@@ -371,7 +265,7 @@ print(nmgs_neutrality(stats, "local"))
 ```
 
 ```
-## Error: object 'stats' not found
+## Error: undefined columns selected
 ```
 
 
