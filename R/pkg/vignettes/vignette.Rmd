@@ -75,7 +75,7 @@ head(summaries)
 Visualize posterior of a given parameter (excluding burn-in and
 thinning the samples):
 
-```{r posterior, message=FALSE, warning=FALSE}
+```{r posterior, message=FALSE, warning=FALSE, fig.align='center'}
 # Define burn-in, thinning and parameter to follow
 
 burnin   <- 25000   # Leave out this many samples from the start
@@ -83,15 +83,16 @@ thinning <- 10       # Take every kth samples
 param    <- "theta" # or one of the migration rates i1...iN
 
 library(ggplot2)
+theme_set(theme_bw(20))
 p <- ggplot(data.frame(x = samples[seq(burnin + 1, nrow(samples), thinning), param]), aes(x = x)) 
 p <- p + geom_density() + xlab(param)
 p <- p + ggtitle(paste(param, "histogram"))
 print(p)
 ```
 
-Follow the convergence of a given parameter. The vertical line indicates the burn-in point:
+Follow parameter convergence. The vertical line indicates the burn-in point:
 
-```{r convergence, message=FALSE, warning=FALSE}
+```{r convergence, message=FALSE, warning=FALSE, fig.align='center'}
 thinning <- 200 # Take every kth samples
 s <- seq(1, nrow(samples), thinning)
 plot(s, samples[s, param], type = "l", main = paste(param, "convergence"))
@@ -103,14 +104,20 @@ abline(v = burnin)
 
 Metacommunity distribution with the local assembly model
 
-```{r metalocal, message=FALSE, warning=FALSE}
+```{r metalocal, message=FALSE, warning=FALSE, fig.align='center', out.width='1\\textwidth'}
 boxplot(metacommunity$p, las = 1)
 ```
 
 Metacommunity averages:
 
-```{r metapop, message=FALSE, warning=FALSE}
-print(nmgs_metapopulation_average(metacommunity)$local)
+```{r metapop, message=FALSE, warning=FALSE, fig.align='center'}
+# Metacommunity, average composition (check this is correct!)
+averages <- nmgs_metapopulation_average(metacommunity)$local
+df <- data.frame(list(species = 1:length(averages), ave = averages))
+p <- ggplot(df, aes(x = species, y = ave)) + geom_bar(stat = "identity")
+p <- p + ggtitle("Estimated metacommunity composition")
+p <- p + xlab("Species index") + ylab("Mean abundance across samples")
+print(p)
 ```
 
 _Metacommunity distribution for the full neutral model (q) - are the species
@@ -124,7 +131,7 @@ output files but we can compare diversity distributions across MCMC
 models w.r.t. observed data. The vertical line indicates diversity in
 the observed data.
 
-```{r diversitycomp, message=FALSE, warning=FALSE}
+```{r diversitycomp, message=FALSE, warning=FALSE, fig.align='center'}
 library(ggplot2)
 theme_set(theme_bw(15))
 
@@ -144,7 +151,7 @@ grid.arrange(local, full, nrow = 2)
 Richnesses in MCMC simulations (histogram) and observed data (vertical
 dashed line):
 
-```{r richcomp, message=FALSE, warning=FALSE}
+```{r richcomp, message=FALSE, warning=FALSE, fig.align='center'}
 full <- qplot(stats$SN, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$SO), linetype = 2)
 full <- full + ggtitle("Full neutral model; model richness vs. observed richness")
 full <- full + xlab("Richness")
@@ -156,13 +163,28 @@ local <- local + xlab("Richness")
 grid.arrange(local, full, nrow = 2)
 ```
 
-Add here the similar histogram for the likelihoods
+Likelihoods in MCMC simulations (histogram) and observed data (vertical
+dashed line):
+
+```{r likeli, message=FALSE, warning=FALSE, fig.align='center'}
+full <- qplot(stats$LN, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$LO), linetype = 2)
+full <- full + ggtitle(paste("Full neutral model; model likelihood vs. observed likelihood (p=", nmgs_neutrality(stats, "full")$pseudo.pvalue , ")"))
+full <- full + xlab("Likelihood")
+
+
+local <- qplot(stats$LL, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$LO), linetype = 2)
+local <- local + ggtitle(paste("Local model; model likelihood vs. observed likelihood (p=", nmgs_neutrality(stats, "local")$pseudo.pvalue , ")"))
+local <- local + xlab("Likelihood")
+
+grid.arrange(local, full, nrow = 2)
+```
+
+
 
 ### Testing neutrality
 
-Neutrality under the full neutral model and the local assembly
-model. Compares the log-likelihood under the full neutral model to the
-observed data:
+Compare the log-likelihood under the full neutral model and local
+assembly model to the observed data:
 
 ```{r neutralityfull, message=FALSE, warning=FALSE}
 print(nmgs_neutrality(stats, "full"))
@@ -174,11 +196,9 @@ print(nmgs_neutrality(stats, "local"))
 
 This work can be freely used, modified and distributed under the [GNU
 General Public GPL>=2
-license](https://en.wikipedia.org/wiki/GNU_General_Public_License).
-
-Kindly cite the work, if appropriate, as 'Leo Lahti, Christoper Quince
-et al. (2013). NMGS R package. URL:
-https://github.com/microbiome/NMGS)'.
+license](https://en.wikipedia.org/wiki/GNU_General_Public_License). Kindly
+cite the work, if appropriate, as 'Leo Lahti, Christoper Quince et
+al. (2013). NMGS R package. URL: https://github.com/microbiome/NMGS)'.
 
 
 ### Session info
