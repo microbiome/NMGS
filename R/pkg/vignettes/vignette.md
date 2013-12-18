@@ -39,7 +39,7 @@ stats <- read_nmgs_stats("Simulation_out_s.csv")
 ```
 
 
-### Description of the model outputs
+These output matrices contain the following information of the fitted model:
 
 _Samples:_ Posterior samples of the model parameters: MCMC samples x
  parameters matrix with the following columns: MCMC sample ID, theta
@@ -94,41 +94,20 @@ thinning the samples):
 
 ```r
 # Define burn-in, thinning and parameter to follow
+
 burnin <- 25000  # Leave out this many samples from the start
 thinning <- 10  # Take every kth samples
 param <- "theta"  # or one of the migration rates i1...iN
 
+library(ggplot2)
 p <- ggplot(data.frame(x = samples[seq(burnin + 1, nrow(samples), thinning), 
     param]), aes(x = x))
-```
-
-```
-## Error: could not find function "ggplot"
-```
-
-```r
 p <- p + geom_density() + xlab(param)
-```
-
-```
-## Error: object 'p' not found
-```
-
-```r
 p <- p + ggtitle(paste(param, "histogram"))
-```
-
-```
-## Error: object 'p' not found
-```
-
-```r
 print(p)
 ```
 
-```
-## Error: object 'p' not found
-```
+![plot of chunk posterior](figure/posterior.png) 
 
 
 Follow the convergence of a given parameter. The vertical line indicates the burn-in point:
