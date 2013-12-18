@@ -74,18 +74,17 @@ Posterior summaries:
 
 ```r
 summaries <- nmgs_posterior_summaries(samples, burnin = 25000, thinning = 10)
-```
-
-```
-## Error: could not find function "nmgs_posterior_summaries"
-```
-
-```r
 head(summaries)
 ```
 
 ```
-## Error: object 'summaries' not found
+##        lower median   mean     sd  upper
+## theta 17.566 21.366 21.425 2.0770 25.675
+## i1     1.021  2.206  2.293 0.7855  4.088
+## i2     8.064 13.165 13.580 3.4295 21.245
+## i3     4.724  8.146  8.277 2.0588 12.699
+## i4     5.259  8.834  9.016 2.2479 13.847
+## i5     4.967  8.454  8.644 2.1655 13.532
 ```
 
 
@@ -257,7 +256,8 @@ print(nmgs_neutrality(stats, "full"))
 ```
 
 ```
-## Error: undefined columns selected
+##   median1 median2 n1    n pseudo.pvalue model
+## 1   -9474   -7368 24 2500        0.0096  full
 ```
 
 ```r
@@ -265,7 +265,8 @@ print(nmgs_neutrality(stats, "local"))
 ```
 
 ```
-## Error: undefined columns selected
+##   median1 median2   n1    n pseudo.pvalue model
+## 1   -7343   -7368 1446 2500        0.5784 local
 ```
 
 
@@ -291,7 +292,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.0.1 (2013-05-16)
+## R version 2.15.2 (2012-10-26)
 ## Platform: x86_64-unknown-linux-gnu (64-bit)
 ## 
 ## locale:
@@ -307,15 +308,15 @@ sessionInfo()
 ## [8] base     
 ## 
 ## other attached packages:
-## [1] gridExtra_0.9.1 ggplot2_0.9.3.1 NMGS_0.1.02     knitr_1.2      
+## [1] gridExtra_0.9.1 ggplot2_0.9.3.1 NMGS_0.1.03     knitr_1.2      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] colorspace_1.2-2   dichromat_2.0-0    digest_0.6.3      
-##  [4] evaluate_0.4.3     formatR_0.7        gtable_0.1.2      
-##  [7] labeling_0.1       MASS_7.3-26        munsell_0.4       
+##  [4] evaluate_0.4.4     formatR_0.9        gtable_0.1.2      
+##  [7] labeling_0.2       MASS_7.3-23        munsell_0.4.2     
 ## [10] plyr_1.8           proto_0.3-10       RColorBrewer_1.0-5
 ## [13] reshape2_1.2.2     scales_0.2.3       stringr_0.6.2     
-## [16] tools_3.0.1
+## [16] tools_2.15.2
 ```
 
 
