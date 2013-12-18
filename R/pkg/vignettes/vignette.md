@@ -127,18 +127,7 @@ abline(v = burnin)
 
 ### Metacommunity
 
-Metacommunity distribution with the local assembly model
-
-
-```r
-boxplot(metacommunity$p, las = 1, xlab = "Species index", ylab = "Abundance", 
-    main = "Metacommunity composition")
-```
-
-<img src="figure/metalocal.png" title="plot of chunk metalocal" alt="plot of chunk metalocal" width="1\textwidth" />
-
-
-Metacommunity averages:
+Metacommunity composition (average over samples) with the local assembly model
 
 
 ```r
@@ -210,19 +199,19 @@ grid.arrange(local, full, nrow = 2)
 
 
 Likelihoods in MCMC simulations (histogram) and observed data (vertical
-dashed line):
+dashed lines):
 
 
 ```r
-full <- qplot(stats$LN, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$LO), 
-    linetype = 2)
+full <- qplot(stats$LN, binwidth = 10, geom = "histogram")
+full <- full + geom_vline(x = unique(stats$LO), linetype = 2)
 full <- full + ggtitle(paste("Full neutral model; model likelihood vs. observed likelihood (p=", 
     nmgs_neutrality(stats, "full")$pseudo.pvalue, ")"))
 full <- full + xlab("Likelihood")
 
 
-local <- qplot(stats$LL, binwidth = 1, geom = "histogram") + geom_vline(x = unique(stats$LO), 
-    linetype = 2)
+local <- qplot(stats$LL, binwidth = 10, geom = "histogram")
+local <- local + geom_vline(x = unique(stats$LO), linetype = 2)
 local <- local + ggtitle(paste("Local model; model likelihood vs. observed likelihood (p=", 
     nmgs_neutrality(stats, "local")$pseudo.pvalue, ")"))
 local <- local + xlab("Likelihood")
