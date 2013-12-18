@@ -75,7 +75,7 @@ head(summaries)
 Visualize posterior of a given parameter (excluding burn-in and
 thinning the samples):
 
-```{r posterior, message=FALSE, warning=FALSE, fig.align='center'}
+```{r posterior, message=FALSE, warning=FALSE, fig.align='centre'}
 # Define burn-in, thinning and parameter to follow
 
 burnin   <- 25000   # Leave out this many samples from the start
@@ -105,7 +105,7 @@ abline(v = burnin)
 Metacommunity distribution with the local assembly model
 
 ```{r metalocal, message=FALSE, warning=FALSE, fig.align='center', out.width='1\\textwidth'}
-boxplot(metacommunity$p, las = 1)
+boxplot(metacommunity$p, las = 1, xlab = "Species index", ylab = "Abundance", main = "Metacommunity composition")
 ```
 
 Metacommunity averages:

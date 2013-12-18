@@ -131,7 +131,8 @@ Metacommunity distribution with the local assembly model
 
 
 ```r
-boxplot(metacommunity$p, las = 1)
+boxplot(metacommunity$p, las = 1, xlab = "Species index", ylab = "Abundance", 
+    main = "Metacommunity composition")
 ```
 
 <img src="figure/metalocal.png" title="plot of chunk metalocal" alt="plot of chunk metalocal" width="1\textwidth" />
