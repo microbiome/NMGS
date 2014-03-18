@@ -12,6 +12,3 @@ Depends:
     methods
 URL: TBA
 LazyLoad: yes
-Collate:
-    'analysis.R'
-    'io.R'
