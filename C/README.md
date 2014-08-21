@@ -2,6 +2,9 @@ To make NMGS executable simply type:
 
 make
 
+In Ubuntu it might necessary to install the libraries gsl-bin and
+libgsl0-dev first.
+
 As an example generate Gibbs samples from fitting to the simulated data set
 
 ./NMGS -in Simulation.csv -out Simulation_out -v -s

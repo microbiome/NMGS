@@ -7,8 +7,7 @@
 #' testf
 #' Test function
 #' 
-#' @param a A number 
-#' @param b Another Number
+#' @param x A number 
 #'
 #' @export
 #'
@@ -23,9 +22,9 @@
 #' @keywords utilities
 
 
-testf <- function( a, b ){
+testf <- function( x ){
 
-  qOFz <- .Call("compare_doubles", a, b, PACKAGE = "NMGS")
+  qOFz <- .Call("safeexp", x, PACKAGE = "NMGS")
 
   qOFz
   

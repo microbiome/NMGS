@@ -57,13 +57,12 @@ int main(int argc, char* argv[])
   double             *adW = NULL, *adS = NULL;
   int                *anTC = NULL,*anTR = NULL, **aanT = NULL, **aanX = NULL, *anJ = NULL;
   double             dLogNormalisation = 0.0, dTheta = 0.0;
-
   /*initialise GSL RNG*/
   gsl_rng_env_setup();
 
   gsl_set_error_handler_off();
   
-  ptGSLRNGType = gsl_rng_default; 
+  ptGSLRNGType = gsl_rng_default;
   ptGSLRNG     = gsl_rng_alloc(ptGSLRNGType);
 
   gsl_set_error_handler_off();
@@ -81,6 +80,35 @@ int main(int argc, char* argv[])
   nN = tData.nN;
 
   nMaxX = maxX(&tData);
+
+  if(tParams.nRarefy != -1){
+    int nMinJ = minJ(&tData);
+    t_Data tRData;
+    char szRFile[MAX_LINE_LENGTH];
+    
+    if(bVerbose){
+      printf("Rarefy to %d:\n",nMinJ);
+      fflush(stderr);
+    }
+
+    rarefy(ptGSLRNG,tParams.nRarefy,&tRData,&tData);
+
+    sprintf(szRFile,"%sR%s",tParams.szOutFileStub,CSV_FILE_SUFFIX);
+    writeAbundanceData(szRFile, &tRData);
+   
+    free(tData.aanX);
+    free(tData.aszSampleNames);
+    free(tData.aszOTUNames);
+
+    tData.nN = tRData.nN;
+    tData.nS = tRData.nS;
+    tData.nSize = tRData.nSize;
+    tData.aanX = tRData.aanX;
+    tData.aszSampleNames = tRData.aszSampleNames;
+    tData.aszOTUNames = tRData.aszOTUNames;
+
+    nS = tRData.nS;
+  }
 	
   aanT = (int **) malloc(nN*sizeof(int*));
   if(!aanT)
@@ -248,6 +276,7 @@ int main(int argc, char* argv[])
 
   if(tParams.bSample){
     printf("Sampling fit...\n");
+
     outputSamples(nIter, nMaxIter, ptGSLRNG, nN, nS, &tParams, &tData, adThetaStore, anJ, aadIStore, aadMStore);
   }
 
@@ -386,6 +415,17 @@ void getCommandLineParams(t_Params *ptParams,int argc,char *argv[])
   szTemp = extractParameter(argc,argv,VERBOSE,OPTION);
   if(szTemp != NULL){
     bVerbose=TRUE;
+  }
+
+  szTemp = extractParameter(argc,argv,RAREFY,OPTION);
+  if(szTemp != NULL){
+    ptParams->nRarefy = strtol(szTemp,&cError,10);
+    if(*cError != '\0'){
+      goto error;
+    }
+  }
+  else{
+    ptParams->nRarefy = -1;
   }
 
   szTemp = extractParameter(argc,argv,OUTPUT_SAMPLE,OPTION);
@@ -685,6 +725,24 @@ int maxX(t_Data *ptData)
 	}
 
 	return nMax;
+}
+
+int minJ(t_Data *ptData)
+{
+  int i = 0, j = 0, nMin = 1e9, nS = ptData->nS, nN = ptData->nN;
+
+  for(i = 0; i < nN; i++){
+    int nTotal = 0;
+
+    for(j = 0; j < nS; j++){
+      nTotal += ptData->aanX[i][j];
+    }
+
+    if(nTotal < nMin){
+      nMin = nTotal;
+    }
+  }
+  return nMin;
 }
 
 void sumColumns(int *anC, int **aanX, int nN, int nS)
@@ -1602,4 +1660,110 @@ void extrapolateSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int 
  free(tDataR.aanX);
 
  return;
+}
+
+void rarefy(gsl_rng *ptGSLRNG,int nMaxJ, t_Data *ptDataR, t_Data *ptData)
+{
+  int n = 0, i = 0, j = 0, nS = ptData->nS, nN = ptData->nN;
+  int **aanX = NULL;
+  int nSDash = 0;
+  int anC[nS];
+  int nC = 0;
+
+  aanX = (int **) malloc(nN*sizeof(int *));
+  if(!aanX)
+    goto memoryError;
+
+  for(i = 0; i < nN; i++){
+    aanX[i] = (int *) malloc(nS*sizeof(int));
+    if(!aanX[i])
+      goto memoryError;
+
+    for(j = 0; j < nS; j++){
+      aanX[i][j] = 0;
+    }
+  }
+
+  for(i = 0; i < nN; i++){
+    for(n = 0; n < nMaxJ; n++){
+      int nI = selectIntCat(ptGSLRNG, nS, ptData->aanX[i]);
+      aanX[i][nI]++;
+    }
+  }
+
+  for(j = 0; j < nS; j++){
+    int nJ = 0;
+    for(i = 0; i < nN; i++){
+      if(aanX[i][j] > 0){
+	nJ = 1;
+      }
+    }
+    if(nJ == 1){
+      anC[j] = nC;
+
+      nC++;
+    }
+    else{
+      anC[j] = -1;
+    }
+    nSDash += nJ;
+  }
+
+  ptDataR->aanX = (int **) malloc(nN*sizeof(int *));
+  if(!ptDataR->aanX)
+    goto memoryError;
+
+  ptDataR->nN = nN;
+  ptDataR->nS = nSDash;
+  ptDataR->nSize = nSDash;
+
+  for(i = 0; i < nN; i++){
+    ptDataR->aanX[i] = (int *) malloc(nSDash*sizeof(int));
+    if(!ptDataR->aanX[i])
+      goto memoryError;
+
+    for(j = 0; j < nSDash; j++){
+      ptDataR->aanX[i][j] = 0;
+    }
+  }
+
+  for(i = 0; i < nN; i++){
+
+    for(j = 0; j < nS; j++){
+      if(anC[j] >= 0){
+	ptDataR->aanX[i][anC[j]] = aanX[i][j];
+      }
+    }
+  }
+  
+  ptDataR->aszSampleNames = (char **) malloc(nN*sizeof(char*));
+  if(! ptDataR->aszSampleNames)
+    goto memoryError;
+
+  for(i = 0; i < nN; i++){
+    ptDataR->aszSampleNames[i] = strdup(ptData->aszSampleNames[i]);
+  }
+
+  ptDataR->aszOTUNames = (char **) malloc(nSDash*sizeof(char*));
+  if(! ptDataR->aszOTUNames)
+    goto memoryError;
+
+  for(i = 0; i < nSDash; i++){
+    ptDataR->aszOTUNames[i] = (char *) malloc(MAX_LINE_LENGTH*sizeof(char));
+    if(!ptDataR->aszOTUNames[i])
+      goto memoryError;
+
+    sprintf(ptDataR->aszOTUNames[i],"D%d",i);
+  }
+
+  /*free up memory*/
+  for(i = 0; i < nN; i++){
+    free(aanX[i]);
+  }
+  free(aanX);
+  return;
+ memoryError:
+  fprintf(stderr,"Failed allocating memory in rarefy\n");
+  fflush(stderr);
+  exit(EXIT_FAILURE);
 }

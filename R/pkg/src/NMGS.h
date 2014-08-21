@@ -18,6 +18,7 @@
 #define SEED       	 "-l"
 #define VERBOSE          "-v"
 #define N_ITERATIONS     "-t"
+#define RAREFY           "-r"
 #define SAMPLE           "-s"
 #define EXTRAPOLATE      "-e"
 #define OUTPUT_SAMPLE    "-o"
@@ -38,8 +39,8 @@
 #define THETA_INIT 10.0
 #define I_INIT     10.0
 
-#define DEF_MAX_ITER 10000
-#define BURN_ITER    1000
+#define DEF_MAX_ITER 50000
+#define BURN_ITER    25000
 #define N_SAMPLE     10
 
 typedef struct s_Params
@@ -58,6 +59,8 @@ typedef struct s_Params
   int nExtrapolate;
   /*output samples*/
   int bOutputSample;
+  /*rarefy sample to lowest sample size*/
+  int nRarefy;
 } t_Params;
 
 typedef struct s_Data
@@ -129,5 +132,9 @@ void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t
 
 void extrapolateSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t_Params *ptParams, t_Data *ptData,
 			double *adThetaStore, int *anJ, double **aadIStore, double** aadMStore);
+
+int minJ(t_Data *ptData);
+
+void rarefy(gsl_rng *ptGSLRNG,int nMaxJ, t_Data *ptDataR, t_Data *ptData);
 
 #endif
