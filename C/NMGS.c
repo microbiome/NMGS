@@ -36,10 +36,11 @@ static char *usage[] = {"NMGS - Fits multisite HDP neutral model to a matrix of 
 			"\t-l\tinteger\tseed\n",
 			"\t-o\t\toutput samples\n",
 			"\t-s\t\tbootstrap for neutral fit\n",
-			"\t-t\tintger\tnumber of iterations\n",
+			"\t-t\tinteger\tnumber of iterations\n",
+            "\t-b\tinteger\tnumber of burn iterations\n",
 			"\t-v\t\tverbose\n"};
 
-static int nLines   = 11;
+static int nLines   = 12;
 
 static int bVerbose = FALSE;
 
@@ -427,6 +428,19 @@ void getCommandLineParams(t_Params *ptParams,int argc,char *argv[])
   else{
     ptParams->nRarefy = -1;
   }
+
+  szTemp = extractParameter(argc,argv,N_BURN_ITER,OPTION);
+  if(szTemp != NULL){
+    ptParams->nBurnIter = strtol(szTemp,&cError,10);
+    if(*cError != '\0'){
+      goto error;
+    }
+  }
+  else{
+    ptParams->nBurnIter = DEF_BURN_ITER;
+  }
+
+
 
   szTemp = extractParameter(argc,argv,OUTPUT_SAMPLE,OPTION);
   if(szTemp != NULL){
@@ -1495,7 +1509,7 @@ void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t
       adMMean[i] = 0.0;
     }
 
-    for(i = BURN_ITER; i < nMaxIter; i++){
+    for(i = ptParams->nBurnIter; i < nMaxIter; i++){
       if(i % N_SAMPLE == 0){
 	int nSDash = 0, anF[nS];
 	double dHS = 0.0, dHH = 0.0, dHR = 0.0, dHF = 0.0, dNLLS = 0.0, dNLLR = 0.0, dNLLH = 0.0, dNLLF = 0.0;
@@ -1625,7 +1639,7 @@ void extrapolateSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int 
  ofp = fopen(szOutFile, "w");
 
  if(ofp){
-   for(i = BURN_ITER; i < nMaxIter; i++){
+   for(i = ptParams->nBurnIter; i < nMaxIter; i++){
      int nSDash = 0, nO = 0, anF[nS];
      double *adMDash = NULL;
 

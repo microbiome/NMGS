@@ -15,13 +15,14 @@
 
 #define OUT_FILE_STUB    "-out"
 #define INPUT_FILE       "-in"
-#define SEED       	 "-l"
+#define SEED       	     "-l"
 #define VERBOSE          "-v"
 #define N_ITERATIONS     "-t"
 #define RAREFY           "-r"
 #define SAMPLE           "-s"
 #define EXTRAPOLATE      "-e"
 #define OUTPUT_SAMPLE    "-o"
+#define N_BURN_ITER      "-b"
 
 #define CSV_FILE_SUFFIX         ".csv"
 #define FREQ_FILE_SUFFIX        "_f.csv"
@@ -40,13 +41,15 @@
 #define I_INIT     10.0
 
 #define DEF_MAX_ITER 50000
-#define BURN_ITER    25000
+#define DEF_BURN_ITER    25000
 #define N_SAMPLE     10
 
 typedef struct s_Params
 {	
   /*no. of iterations*/
   int nMaxIter;
+  /* no. of burn-in iterations*/
+  int nBurnIter;
   /*seed*/
   int nL;
   /*csv input file*/
