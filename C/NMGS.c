@@ -32,15 +32,15 @@ static char *usage[] = {"NMGS - Fits multisite HDP neutral model to a matrix of 
 			"\t-in\tfilename\tcsv file\n",
 			"\t-out\toutfilestub\n",
                         "Optional:\n",	
+			"\t-b\tinteger\tnumber of burn iterations\n",
 			"\t-e\tinteger\textrapolate size\n",
 			"\t-l\tinteger\tseed\n",
 			"\t-o\t\toutput samples\n",
 			"\t-s\t\tbootstrap for neutral fit\n",
-			"\t-t\tinteger\tnumber of iterations\n",
-            "\t-b\tinteger\tnumber of burn iterations\n",
+			"\t-t\tintger\tnumber of iterations\n",
 			"\t-v\t\tverbose\n"};
 
-static int nLines   = 12;
+static int nLines   = 13;
 
 static int bVerbose = FALSE;
 
@@ -55,9 +55,11 @@ int main(int argc, char* argv[])
   double             *adLogNormalisation = NULL, *adLogProbV = NULL, *adLogProbAdjustV, *adProbV, *adCProbV; 
   double             **aadStirlingMatrix = NULL, *adStirlingVector = NULL;
   double             *adJ = NULL, *adM = NULL, **aadMStore = NULL, **aadIStore = NULL, *adThetaStore = NULL;
+  int                **aanTStore = NULL;
   double             *adW = NULL, *adS = NULL;
   int                *anTC = NULL,*anTR = NULL, **aanT = NULL, **aanX = NULL, *anJ = NULL;
   double             dLogNormalisation = 0.0, dTheta = 0.0;
+  char*              szSampleDir = (char *) malloc(MAX_LINE_LENGTH*sizeof(char));
   /*initialise GSL RNG*/
   gsl_rng_env_setup();
 
@@ -186,7 +188,15 @@ int main(int argc, char* argv[])
   if(!adThetaStore)
     goto memoryError;
 
+  aanTStore = (int **) malloc(nMaxIter*sizeof(int*));
+  if(!aanTStore)
+    goto memoryError;
+
   for(i = 0; i < nMaxIter; i++){
+    aanTStore[i] = (int *) malloc(nS*sizeof(int));
+    if(!aanTStore[i])
+      goto memoryError;
+
     aadMStore[i] = (double *) malloc((nS + 1)*sizeof(double));
     if(!aadMStore[i])
       goto memoryError;
@@ -234,6 +244,10 @@ int main(int argc, char* argv[])
 
     sampleT(nIter, ptGSLRNG, aanX, aanT, aadIStore, aadMStore, aadStirlingMatrix, nN, nS, adLogProbV, adProbV, adCProbV);
 
+    for(i = 0; i < nS; i++){
+      aanTStore[nIter][i] = anTC[i];
+    }
+
     if(bVerbose == TRUE){
       printf("Iteration:%d\n",nIter + 1);
       printf("Theta:%f\n",adThetaStore[nIter]);
@@ -275,15 +289,23 @@ int main(int argc, char* argv[])
     }
   }
 
-  if(tParams.bSample){
-    printf("Sampling fit...\n");
+  if(tParams.bOutputSample){
+    sprintf(szSampleDir,"%s%s",tParams.szOutFileStub,SAMPLE_DIR);
 
-    outputSamples(nIter, nMaxIter, ptGSLRNG, nN, nS, &tParams, &tData, adThetaStore, anJ, aadIStore, aadMStore);
+    mkdir(szSampleDir, S_IRWXU);
   }
 
   if(tParams.nExtrapolate > -1){
-    extrapolateSamples(nIter, nMaxIter, ptGSLRNG, nN, nS, &tParams, &tData,
-		       adThetaStore, anJ, aadIStore, aadMStore);
+    //  extrapolateSamples(nIter, nMaxIter, ptGSLRNG, nN, nS, &tParams, &tData,
+    //	       adThetaStore, anJ, aadIStore, aadMStore);
+    extrapolateSamples2(szSampleDir,nIter, nMaxIter, ptGSLRNG, tParams.nExtrapolate, nN, nS, &tParams, &tData,
+			 adThetaStore, anJ, aadIStore, aanTStore);
+  }
+
+  if(tParams.bSample){
+    printf("Sampling fit...\n");
+
+    outputSamples(szSampleDir,nIter, nMaxIter, ptGSLRNG, nN, nS, &tParams, &tData, adThetaStore, anJ, aadIStore, aadMStore);
   }
   /*free up memory*/
   free(adW);
@@ -303,7 +325,12 @@ int main(int argc, char* argv[])
     aadMStore[i] = NULL;
     free(aadIStore[i]);
     aadIStore[i] = NULL;
+    free(aanTStore[i]);
+    aanTStore[i] = NULL;
   }
+  free(aanTStore);
+  aanTStore = NULL;
+
   free(aadMStore);
   aadMStore = NULL;
   
@@ -344,6 +371,9 @@ int main(int argc, char* argv[])
   free(adThetaStore);
   adThetaStore = NULL;
 
+  free(szSampleDir);						   
+  szSampleDir = NULL;
+  
   for(i = 0; i < nN; i++){
     free(aanT[i]);
     aanT[i] = NULL;
@@ -418,17 +448,6 @@ void getCommandLineParams(t_Params *ptParams,int argc,char *argv[])
     bVerbose=TRUE;
   }
 
-  szTemp = extractParameter(argc,argv,RAREFY,OPTION);
-  if(szTemp != NULL){
-    ptParams->nRarefy = strtol(szTemp,&cError,10);
-    if(*cError != '\0'){
-      goto error;
-    }
-  }
-  else{
-    ptParams->nRarefy = -1;
-  }
-
   szTemp = extractParameter(argc,argv,N_BURN_ITER,OPTION);
   if(szTemp != NULL){
     ptParams->nBurnIter = strtol(szTemp,&cError,10);
@@ -440,7 +459,16 @@ void getCommandLineParams(t_Params *ptParams,int argc,char *argv[])
     ptParams->nBurnIter = DEF_BURN_ITER;
   }
 
-
+  szTemp = extractParameter(argc,argv,RAREFY,OPTION);
+  if(szTemp != NULL){
+    ptParams->nRarefy = strtol(szTemp,&cError,10);
+    if(*cError != '\0'){
+      goto error;
+    }
+  }
+  else{
+    ptParams->nRarefy = -1;
+  }
 
   szTemp = extractParameter(argc,argv,OUTPUT_SAMPLE,OPTION);
   if(szTemp != NULL){
@@ -627,10 +655,21 @@ void Stirling(double ***paadStirlingMatrix,double** padNormMatrix,unsigned long 
   if(!aadStirlingMatrix)
     goto memoryError;
 
+  for(i = 0; i < nN2; i++){
+    adS[i] = 0.0;
+    adL[i] = 0.0;
+  }
+
   for(i = 0; i < nN1; i++){
     aadStirlingMatrix[i] = (double *) malloc((i+1)*sizeof(double));
+    
     if(!aadStirlingMatrix[i])
       goto memoryError;
+    
+    for(j = 0; j < i + 1; j++){
+        aadStirlingMatrix[i][j] = 0.0;
+    }
+
   }
 
   adNormMatrix = (double *) malloc(nN1*sizeof(double));
@@ -919,6 +958,44 @@ void addUnobserved(t_Data* ptDataR, t_Data *ptData)
   exit(EXIT_FAILURE);
 }
 
+void copyData(t_Data* ptDataR, t_Data *ptData)
+{
+  int    i = 0, j = 0;
+  int    nN = ptData->nN, nS = ptData->nS;
+  int    **aanX = (int **) malloc(nN*sizeof(int*));
+
+  if(!aanX)
+    goto memoryError;
+
+  ptDataR->nSize = ptData->nS;
+
+  for(i = 0; i < nN; i++){
+    aanX[i] = (int *) malloc(ptDataR->nSize*sizeof(int));
+
+    if(!aanX[i])
+      goto memoryError;
+
+    for(j = 0; j < ptDataR->nSize; j++){
+      aanX[i][j] = 0;
+    }
+
+    for(j = 0; j < nS; j++){
+      aanX[i][j] = ptData->aanX[i][j];
+    }
+  }
+
+  ptDataR->aanX = aanX;
+  ptDataR->nS = nS;
+  ptDataR->nN = nN;
+
+  return;
+
+ memoryError:
+  fprintf(stderr,"Failed allocating memory in generateData\n");
+  fflush(stderr);
+  exit(EXIT_FAILURE);
+}
+
 void generateData(gsl_rng* ptGSLRNG, t_Data *ptData, int nN, double dTheta, int *anJ, double* adI, int nS, double *adM)
 {
   int    i = 0, j = 0, n = 0, nSize = nS*10;
@@ -988,6 +1065,98 @@ void reallocateData(t_Data *ptData)
   return;
  memoryError:
   fprintf(stderr,"Failed allocating memory in reallocateData\n");
+  fflush(stderr);
+  exit(EXIT_FAILURE);
+}
+
+void extrapolateDataHDP(gsl_rng* ptGSLRNG, t_Data *ptData, int nN, int nE, double dTheta, double* adI, int* anTSample)
+{
+  int    i = 0, j = 0, k = 0, n = 0;
+  int    *anT = NULL, nT = 0;
+  int    *anJ = (int *) malloc(nN*sizeof(int));
+  int    bAdd = TRUE;
+  if(!anJ)
+    goto memoryError;
+
+  anT = (int *) malloc(ptData->nSize*sizeof(int));
+  if(!anT)
+    goto memoryError;
+
+  for(i = 0; i < ptData->nSize; i++){
+    anT[i] = 0;
+  }
+
+  for(i = 0; i < ptData->nS; i++){
+    anT[i] = anTSample[i];
+    nT += anT[i];
+  }
+
+  for(i = 0; i < nN; i++){
+    anJ[i] = 0;
+    for(j = 0; j < ptData->nS; j++){
+      anJ[i] += ptData->aanX[i][j];
+    }
+  }
+
+  while(bAdd == TRUE){
+    bAdd = FALSE;
+    for(i = 0; i < nN; i++){
+      if(anJ[i] < nE){
+	int n = anJ[i];
+	double dImmigrate = adI[i]/(adI[i] + (double) n);
+	double dRand = gsl_rng_uniform(ptGSLRNG);
+	int    l = -1;
+
+	bAdd = TRUE;
+
+	if(dRand < dImmigrate){
+	  double dSpeciate = dTheta/(dTheta + (double) nT);
+	
+	  dRand = gsl_rng_uniform(ptGSLRNG);
+	  if(dRand < dSpeciate){
+	  
+	    if(ptData->nS >= ptData->nSize){
+	      ptData->nSize = ptData->nSize*2;
+	    
+	      reallocateData(ptData);
+	    
+	      anT = (int *) realloc(anT, ptData->nSize*sizeof(int));
+	      if(!anT)
+		goto memoryError;
+
+	      for(j = ptData->nS; j < ptData->nSize; j++){
+		anT[j] = 0;
+	      }
+	    }
+	  
+	    anT[ptData->nS] = 1;
+
+	    ptData->aanX[i][ptData->nS] = 1;
+
+	    ptData->nS = ptData->nS + 1;
+	  }
+	  else{
+	    l = selectIntCat(ptGSLRNG, ptData->nS, anT);
+	    anT[l]++;
+	    ptData->aanX[i][l]++;
+	  }
+	  nT++;
+	}
+	else{
+	  l = selectIntCat(ptGSLRNG, ptData->nS, ptData->aanX[i]);
+	  ptData->aanX[i][l]++;
+	}
+	anJ[i]++;
+      }
+    }
+  }
+  
+  free(anT);
+  free(anJ); 
+  return;
+
+ memoryError:
+  fprintf(stderr,"Failed allocating memory in generateData\n");
   fflush(stderr);
   exit(EXIT_FAILURE);
 }
@@ -1437,7 +1606,7 @@ void sampleT(int nIter, gsl_rng* ptGSLRNG, int** aanX, int **aanT, double** aadI
       else{
 	double D = MIN_DBL, dSum = 0.0, dLogNormC = 0.0, u4 = 0.0;
 				
-	for(i = 0; i < nXX;++i){
+	for(i = 0; i < nXX;i++){
 	  double i1 = i + 1.0;
 	  adLogProbV[i] = log(aadStirlingMatrix[nXX - 1][i]) + (i1*log(aadIStore[nIter][ii]*aadMStore[nIter][jj]));
 	}
@@ -1470,7 +1639,7 @@ void sampleT(int nIter, gsl_rng* ptGSLRNG, int** aanX, int **aanT, double** aadI
   }
 }
 
-void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t_Params *ptParams, t_Data *ptData,
+void outputSamples(char *szOutputDir, int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t_Params *ptParams, t_Data *ptData,
 		   double *adThetaStore, int *anJ, double **aadIStore, double** aadMStore)
 {
   t_Data tTempData, tTempDataH;
@@ -1478,7 +1647,6 @@ void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t
   char szOutFile[MAX_LINE_LENGTH];
   char szSampleFile[MAX_LINE_LENGTH];
   char szMetaFile[MAX_LINE_LENGTH];
-  char szSampleDir[MAX_LINE_LENGTH];
   t_Data tDataR;
   int** aanX = ptData->aanX;
   int i = 0, j = 0, k = 0;
@@ -1487,12 +1655,6 @@ void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t
   sprintf(szMetaFile,"%s%s",ptParams->szOutFileStub,META_FILE_SUFFIX);
 
   addUnobserved(&tDataR, ptData);
-  
-  sprintf(szSampleDir,"%s%s",ptParams->szOutFileStub,SAMPLE_DIR);
-
-  if(ptParams->bOutputSample){
-    mkdir(szSampleDir, S_IRWXU);
-  }
 
   sfp = fopen(szSampleFile, "w");
   mfp = fopen(szMetaFile,"w");
@@ -1533,7 +1695,7 @@ void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t
 
 	/*output sampled file*/
 	if(ptParams->bOutputSample){
-	  sprintf(szStickSampleFile,"%s%s/%s%d%s",ptParams->szOutFileStub,SAMPLE_DIR,ptParams->szOutFileStub,i,CSV_FILE_SUFFIX);
+	  sprintf(szStickSampleFile,"%s/%s%d%s",szOutputDir,ptParams->szOutFileStub,i,CSV_FILE_SUFFIX);
 	
 	  tTempData.aszSampleNames = ptData->aszSampleNames;
 	
@@ -1613,6 +1775,75 @@ void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t
    free(tDataR.aanX[i]);
  }
  free(tDataR.aanX);
+
+ return;
+}
+
+void extrapolateSamples2(char *szOutputDir, int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nE, int nN, int nS, t_Params *ptParams, t_Data *ptData,
+			double *adThetaStore, int *anJ, double **aadIStore, int** aanTStore)
+{
+ 
+ char szOutFile[MAX_LINE_LENGTH];
+ int i = 0, j = 0, k = 0;
+ char szExtraFile[MAX_LINE_LENGTH];
+ FILE *ofp = NULL;
+ sprintf(szOutFile,"%s%s",ptParams->szOutFileStub,EXTRAPOLATE_FILE_SUFFIX);
+   
+ for(i = ptParams->nBurnIter; i < nMaxIter; i++){
+     if(i % N_SAMPLE == 0){
+       int nSDash = 0, nO = 0, anF[nS];
+       t_Data tDataR;
+     
+       copyData(&tDataR, ptData);
+
+       extrapolateDataHDP(ptGSLRNG, &tDataR, nN, nE, adThetaStore[i], aadIStore[i], aanTStore[i]);
+       
+       ofp = fopen(szOutFile, "a");   
+       if(ofp){
+	        fprintf(ofp,"%d,",i);
+	        for(j = 0; j < nN; j++){
+	            int nSN = 0;
+	            for(k = 0; k < tDataR.nS;k++){
+	                if(tDataR.aanX[j][k] > 0){
+	                    nSN++;
+	                }
+	            }
+	            if(j < nN - 1){
+	                fprintf(ofp,"%d,",nSN);
+	            }
+	            else{
+	                fprintf(ofp,"%d\n",nSN);
+	            }
+	        }
+	        fclose(ofp);
+       }
+
+       if(ptParams->bOutputSample){
+	    tDataR.aszOTUNames = (char **) malloc(tDataR.nS*sizeof(char *));
+	    for(k = 0; k < tDataR.nS; k++){
+	        tDataR.aszOTUNames[k] = (char *) malloc(MAX_LINE_LENGTH*sizeof(char));
+	         sprintf(tDataR.aszOTUNames[k],"D%d",k);
+	    }
+
+	    sprintf(szExtraFile,"%s/%s%de%s",szOutputDir,ptParams->szOutFileStub,i,CSV_FILE_SUFFIX);
+		 
+	    tDataR.aszSampleNames = ptData->aszSampleNames;
+	
+	    writeAbundanceData(szExtraFile, &tDataR);
+	 
+	    for(k = 0; k < tDataR.nS; k++){
+	      free(tDataR.aszOTUNames[k]); 
+	    }
+
+	    free(tDataR.aszOTUNames);
+       }
+
+       for(j = 0; j < nN; j++){
+	        free(tDataR.aanX[j]);
+       }
+       free(tDataR.aanX);
+     }
+   }
 
  return;
 }

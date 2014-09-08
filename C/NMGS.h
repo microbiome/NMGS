@@ -15,7 +15,7 @@
 
 #define OUT_FILE_STUB    "-out"
 #define INPUT_FILE       "-in"
-#define SEED       	     "-l"
+#define SEED       	 "-l"
 #define VERBOSE          "-v"
 #define N_ITERATIONS     "-t"
 #define RAREFY           "-r"
@@ -40,9 +40,9 @@
 #define THETA_INIT 10.0
 #define I_INIT     10.0
 
-#define DEF_MAX_ITER 50000
-#define DEF_BURN_ITER    25000
-#define N_SAMPLE     10
+#define DEF_MAX_ITER  50000
+#define DEF_BURN_ITER 25000
+#define N_SAMPLE      10
 
 typedef struct s_Params
 {	
@@ -130,14 +130,21 @@ void sampleImmigrationRates(int nIter, gsl_rng *ptGSLRNG, double **aadIStore, in
 void sampleT(int nIter, gsl_rng* ptGSLRNG, int** aanX, int **aanT, double** aadIStore, double** aadMStore, 
 	     double** aadStirlingMatrix, int nN, int nS, double *adLogProbV, double *adProbV, double *adCProbV);
 
-void outputSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t_Params *ptParams, t_Data *ptData,
+void outputSamples(char *szOutputDir,int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t_Params *ptParams, t_Data *ptData,
 		   double *adThetaStore, int *anJ, double **aadIStore, double** aadMStore);
 
 void extrapolateSamples(int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nN, int nS, t_Params *ptParams, t_Data *ptData,
 			double *adThetaStore, int *anJ, double **aadIStore, double** aadMStore);
 
+void extrapolateSamples2(char *szOutputDir, int nIter, int nMaxIter, gsl_rng* ptGSLRNG, int nE, int nN, int nS, t_Params *ptParams, t_Data *ptData,
+			 double *adThetaStore, int *anJ, double **aadIStore, int** aanTStore);
+
 int minJ(t_Data *ptData);
 
 void rarefy(gsl_rng *ptGSLRNG,int nMaxJ, t_Data *ptDataR, t_Data *ptData);
+
+void extrapolateDataHDP(gsl_rng* ptGSLRNG, t_Data *ptData, int nN, int nE, double dTheta, double* adI, int* anTSample);
+
+void copyData(t_Data* ptDataR, t_Data *ptData);
 
 #endif
