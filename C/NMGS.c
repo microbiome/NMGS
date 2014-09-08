@@ -1702,7 +1702,7 @@ void outputSamples(char *szOutputDir, int nIter, int nMaxIter, gsl_rng* ptGSLRNG
 	  writeAbundanceData(szStickSampleFile, &tTempData);
 	}
 
-	generateDataHDP(ptGSLRNG, &tTempDataH, nN, adThetaStore[j], anJ, aadIStore[i], &anT);
+	generateDataHDP(ptGSLRNG, &tTempDataH, nN, adThetaStore[i], anJ, aadIStore[i], &anT);
 
 	adMH = (double *) malloc(sizeof(double)*(tTempDataH.nS + 1));
 
