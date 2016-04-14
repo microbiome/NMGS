@@ -12,3 +12,4 @@ Depends:
     methods
 URL: TBA
 LazyLoad: yes
+RoxygenNote: 5.0.1

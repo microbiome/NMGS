@@ -1,6 +1,6 @@
 #' @title Average over the metapopulations
 #' @description Average over the metapopulations
-#' @param metacommunity
+#' @param metacommunity metacommunity
 #' @return The average
 #' @export
 #' @references See citation("NMGS") 
