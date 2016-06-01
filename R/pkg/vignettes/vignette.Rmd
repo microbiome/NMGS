@@ -41,15 +41,6 @@ _Samples:_ Posterior samples of the model parameters: MCMC samples x
  parameters matrix with the following columns: MCMC sample ID, theta
  (biodiversity parameter), i1...iN immigration rates
 
-_stats:_ Statistics on the sampled communities (after removing burn-in
-and parsing the remaining samples; by default, every 10th sample
-used); Matrix of selected samples x statistics: 
-  * MCMC sampleID: nth sample generated under the neutral model with fitted parameters taken from the corresponding MCMC sample
-  * LN, LL, LO: log-likelihoods of the full neutral sample, the local
-community sample and the observed sample, respectively;
-  * HN, HL, HO: species entropies (ie. Shannon diversity; neutral, local, observed)
-  * SN, SL, SO: species richnesses (neutral, local, observed)
-
 _metacommunity:_ A list with N, p, q. Gives the generated
  metacommunities: SampleN, SL, SN; p1,...,pSL; q1,...,qSN. The N is a
  matrix with MCMC sample ID, SL (species richness in the local
@@ -59,6 +50,16 @@ _metacommunity:_ A list with N, p, q. Gives the generated
  SL); q is the metacommunity distribution under the full neutral model
  (a list with elements with varying length SN, each corresponding to
  one MCMC sample).
+
+_stats:_ Statistics on the sampled communities (after removing burn-in
+and parsing the remaining samples; by default, every 10th sample
+used); Matrix of selected samples x statistics: 
+  * MCMC sampleID: nth sample generated under the neutral model with fitted parameters taken from the corresponding MCMC sample
+  * LN, LL, LO: log-likelihoods of the full neutral sample, the local
+community sample and the observed sample, respectively;
+  * HN, HL, HO: species entropies (ie. Shannon diversity; neutral, local, observed)
+  * SN, SL, SO: species richnesses (neutral, local, observed)
+
 
 
 ## Analyzing the NMGS outputs

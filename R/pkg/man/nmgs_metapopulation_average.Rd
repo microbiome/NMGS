@@ -2,10 +2,11 @@
 % Please edit documentation in R/analysis.R
 \name{nmgs_metapopulation_average}
 \alias{nmgs_metapopulation_average}
-\title{Average over the metapopulations.}
+\title{Average over the metapopulations}
 \usage{
 nmgs_metapopulation_average(metacommunity)
 }
+<<<<<<< HEAD
 \description{
 Arguments:
   @param metacommunity
@@ -13,6 +14,16 @@ Arguments:
 \details{
 Returns:
   @return The average
+=======
+\arguments{
+\item{metacommunity}{metacommunity}
+}
+\value{
+The average
+}
+\description{
+Average over the metapopulations
+>>>>>>> ae186b09b348f3f8c693c9677b0dcfcdc700095c
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}
