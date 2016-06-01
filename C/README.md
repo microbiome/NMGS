@@ -1,9 +1,14 @@
+## Initializing the code
+
 To make NMGS executable simply type:
 
 make
 
 In Ubuntu it might necessary to install the libraries gsl-bin and
 libgsl0-dev first.
+
+
+## Model fitting
 
 As an example generate Gibbs samples from fitting to the simulated data set
 
@@ -13,6 +18,9 @@ As an example generate Gibbs samples from fitting to the simulated data set
 -out the output file stub
 -v prints progress to screen
 -s generates samples to determine whether community appears neutral and output sampled metacommunity relative abundances
+
+
+### Output files
 
 Produces three output files
 
@@ -41,6 +49,9 @@ Simulation_out_s.csv: Gives statistics on the sampled communities in format:
 SampleN,LN,LL,LO,HN,HL,HO,SN,SL,SO
 
 where SampleN is nth sample generated under the neutral model with fitted parameters taken from the corresponding MCMC sample. LN,LL,LO are the log-likelihoods of the full neutral sample, the local community sample and the observed sample respectively. Then HN,HL,HO and SN,SL,SO are the species entropies and richness's in the same order.
+
+
+## Analyzing the output
 
 Scripts are provided to process this output:
 

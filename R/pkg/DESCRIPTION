@@ -1,13 +1,8 @@
 Package: NMGS
 Type: Package
 Title: NMGS
-<<<<<<< HEAD
-Version: 0.0.03
-Date: 2013-09-29
-=======
 Version: 0.1.03
 Date: 2013-12-16
->>>>>>> 34a921a77a59b00ef020fb6566f642d0394ff933
 Author: Leo Lahti, Christopher Quince, Keith Harris et al.
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Neutral model with Dirichlet processes.
@@ -17,3 +12,4 @@ Depends:
     methods
 URL: TBA
 LazyLoad: yes
+RoxygenNote: 5.0.1
